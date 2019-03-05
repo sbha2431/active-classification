@@ -115,7 +115,7 @@ class MDP(NFA):
         self._prepare_post_cache()
         file.write('|S| = {}\n'.format(len(self.states)))
         file.write('|A| = {}\n'.format(len(self.alphabet)))
-        file.write('s0 = {}\n'.format(initial))
+        file.write('s0 = {}\n'.format(list(self.states).index(initial)))
         if len(targets)>0:
             stri = 'targets = ('
             for t in targets:
@@ -128,7 +128,7 @@ class MDP(NFA):
         for s in self.states:
             for a in self.available(s):
                 for t in self.post(s,a):
-                    file.write('{} {} {} {}\n'.format(s,a,t,self.prob_delta(s,a,t)))
+                    file.write('{} {} {} {}\n'.format(list(self.states).index(s),a,list(self.states).index(t),self.prob_delta(s,a,t)))
 
     def construct_MC(self,policy,filename = None,randomness=0):
         transitions = []

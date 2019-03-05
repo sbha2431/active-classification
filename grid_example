@@ -3,19 +3,22 @@ from mdp import MDP
 from tqdm import tqdm
 nrows = 7
 ncols = 5
+goodtargets = {0}
+badtargets = {20}
 initial = [4]
-moveobstacles = []
-targets = [[]]
+moveobstacles = [30]
+targets = [list(goodtargets.union(badtargets))]
 obstacles = []
 
 
 regionkeys = {'pavement','gravel','grass','sand','deterministic'}
 regions = dict.fromkeys(regionkeys,{-1})
-regions['pavement']= range(nrows*ncols)
+regions['sand']= range(nrows*ncols)
 
 gwg = Gridworld(initial, nrows, ncols, 1, targets, obstacles,moveobstacles,regions)
 gwg.render()
 gwg.draw_state_labels()
+gwg.save('Examples/example_7x5.png')
 #
 states = range(gwg.nstates)
 alphabet = [0,1,2,3] # North, south, west, east
@@ -27,8 +30,7 @@ for s in states:
             transitions.append((s, alphabet.index(a), t, p))
 
 mdp = MDP(states, set(alphabet),transitions)
-goodtargets = {0}
-badtargets = {23}
+
 # V, goodpolicy = mdp.max_reach_prob(goodtargets, epsilon=0.0001)
 # V, badpolicy = mdp.max_reach_prob(badtargets, epsilon=0.0001)
 randomness = 0
@@ -55,4 +57,4 @@ for s1 in states:
                 product_trans.append((s1,a,s2,p1*p2))
 
 product_mdp = MDP(states, set(alphabet),product_trans)
-product_mdp.write_to_file('Examples/7x5_productmdp_bad',(4,30))
+product_mdp.write_to_file('Examples/7x5_productmdp_bad',(30,4))
