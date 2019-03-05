@@ -39,8 +39,7 @@ R.update([(s,a,next_s),1.0] for s in mdp.states  for a in mdp.available(s) for n
 V,goodpolicy =  mdp.T_step_value_iteration(R,10)
 R = dict([(s,a,next_s),0.0] for s in mdp.states for a in mdp.available(s) for next_s in mdp.post(s,a) )
 R.update([(s,a,next_s),1.0] for s in mdp.states  for a in mdp.available(s) for next_s in mdp.post(s,a) if next_s in badtargets and s in badtargets)
-# print R
-# Solving belief
+
 V,badpolicy =  mdp.T_step_value_iteration(R,10)
 good_MC = mdp.construct_MC(goodpolicy,'Examples/7x5_good.txt')
 bad_MC = mdp.construct_MC(badpolicy,'Examples/7x5_bad.txt')
