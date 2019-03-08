@@ -16,11 +16,16 @@ class POMDP(MDP):
         # self._prepare_post_cache()
         self.MDP = MDP
         self.Observations = []
+        self.Observations_counter = []
         for i in range(2): #Number of agents -- hardcoded
             obs = dict()
             for s in self.MDP.states:
                 obs.update({s:self.observation_model(s,gwg,i)})
             self.Observations.append(obs)
+            obs_set = dict()
+            for k,v in obs.items():
+                obs_set.setdefault(v,set()).add(k)
+            self.Observations_counter.append(obs_set)
 
     def observation_model(self,s,gwg,i):
         # 8-bit observation
@@ -71,3 +76,10 @@ class POMDP(MDP):
             for a in self.MDP.available(s):
                 for t in self.MDP.post(s,a):
                     file.write('{} {} {} {} {} {}\n'.format(list(self.MDP.states).index(s),self.Observations[agent_no][s],a,list(self.MDP.states).index(t),self.Observations[agent_no][t],self.MDP.prob_delta(s,a,t)))
+        file.close()
+        file_obs = open(filename+"_obs",'w')
+        file_obs.write("|z| = {}\n".format(len(self.Observations_counter[0])))
+        for obs in self.Observations_counter[0]:
+            for s in self.Observations_counter[0][obs]:
+                file_obs.write('{} {} {}\n'.format(list(self.MDP.states).index(s),obs,1./len(self.Observations_counter[0][obs])))
+        file_obs.close()
