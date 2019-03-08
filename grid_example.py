@@ -1,5 +1,6 @@
 from gridworld import *
 from mdp import MDP
+from pomdp import POMDP
 from tqdm import tqdm
 nrows = 7
 ncols = 5
@@ -56,4 +57,7 @@ for s1 in states:
                 product_trans.append((s1,a,s2,p1*p2))
 
 product_mdp = MDP(states, set(alphabet),product_trans)
-product_mdp.write_to_file('Examples/7x5_productmdp_bad',(30,4))
+product_pomdp = POMDP(product_mdp,gwg)
+# product_mdp.write_to_file('Examples/7x5_productmdp_bad',(30,4))
+product_pomdp.write_to_file('Examples/7x5_productpomdp_bad',(30,4))
+
