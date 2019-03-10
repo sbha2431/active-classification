@@ -17,11 +17,17 @@ class POMDP(MDP):
         self.MDP = MDP
         self.Observations = []
         self.Observations_counter = []
+        self.NullObs = []
         for i in range(2): #Number of agents -- hardcoded
             obs = dict()
+            null_set = set()
             for s in self.MDP.states:
-                obs.update({s:self.observation_model(s,gwg,i)})
+                o_value,n_value = self.observation_model(s, gwg, i)
+                obs.update({s:o_value})
+                if n_value:
+                    null_set.add(s)
             self.Observations.append(obs)
+            self.NullObs.append(null_set)
             obs_set = dict()
             for k,v in obs.items():
                 obs_set.setdefault(v,set()).add(k)
@@ -47,10 +53,12 @@ class POMDP(MDP):
         obs_state = co_ords[0]
         diff_state = tuple(np.subtract(active_state,obs_state))
         loc_dict = {(-1,1):0,(0,1):1,(1,1):2,(1,0):3,(1,-1):4,(0,-1):5,(-1,1):6,(-1,0):7}
+        null_o = True
         if diff_state in loc_dict:
                 one_index += [loc_dict[diff_state]]
+                null_o = False
         z_vec[list(set(one_index))] = 1
-        return self.obs_vec2int(z_vec)
+        return self.obs_vec2int(z_vec),null_o
 
     def obs_vec2int(self,z_vec):
         z_bin = ''.join(map(str,z_vec))
@@ -79,7 +87,11 @@ class POMDP(MDP):
         file.close()
         file_obs = open(filename+"_obs",'w')
         file_obs.write("|z| = {}\n".format(len(self.Observations_counter[0])))
+        file_obs.write("s z p(z|s)\n")
         for obs in self.Observations_counter[0]:
             for s in self.Observations_counter[0][obs]:
-                file_obs.write('{} {} {}\n'.format(list(self.MDP.states).index(s),obs,1./len(self.Observations_counter[0][obs])))
+                if s in self.NullObs[0]:
+                    file_obs.write('{} {} {}\n'.format(list(self.MDP.states).index(s),256,1./len(self.Observations_counter[0][obs])))
+                else:
+                    file_obs.write('{} {} {}\n'.format(list(self.MDP.states).index(s),obs,1./len(self.Observations_counter[0][obs])))
         file_obs.close()
