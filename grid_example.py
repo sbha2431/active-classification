@@ -58,6 +58,22 @@ for s1 in states:
 
 product_mdp = MDP(states, set(alphabet),product_trans)
 product_pomdp = POMDP(product_mdp,gwg)
-# product_mdp.write_to_file('Examples/7x5_productmdp_bad',(30,4))
+product_mdp.write_to_file('Examples/7x5_productmdp_bad',(30,4))
 product_pomdp.write_to_file('Examples/7x5_productpomdp_bad',(30,4))
+
+# Construct product mdp
+states = [(s1,s2) for s1 in gwg.states for s2 in gwg.states]
+product_trans2 = []
+for s1 in states:
+    for s2 in states:
+        for a in alphabet:
+            p1 = gwg.prob[gwg.actlist[a]][s1[0]][s2[0]]
+            p2 = good_MC[(s1[1],s2[1])]
+            if p1*p2>0:
+                product_trans2.append((s1,a,s2,p1*p2))
+
+product_mdp2 = MDP(states, set(alphabet),product_trans2)
+product_pomdp2 = POMDP(product_mdp2,gwg)
+product_mdp2.write_to_file('Examples/7x5_productmdp_good',(30,4))
+product_pomdp2.write_to_file('Examples/7x5_productpomdp_good',(30,4))
 
