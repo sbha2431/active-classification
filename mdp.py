@@ -231,29 +231,12 @@ class MDP(NFA):
                 policyT[s] = acts
             e = abs(max([Vstate1[s] -
                          Vstate[s] for s in self.states]))  # the abs error
-            print e
+            print(e)
                 # print "iteration: {} and the state
                 # value is {}".format(t, Vstate1)
         for s in sinks:
             policyT[s] = {'stop'}
         return Vstate1, policyT
-
-    def policyTofile(self,policy,outfile):
-        file = open(outfile, 'w')
-        file.write('policy = dict()\n')
-        for s in self.states:
-            x = -s[1]
-            y = s[0]
-            t = (s[2]-270)%360
-            s2 = (x,y,t)
-            if s not in policy.keys():
-                file.write('policy[' + str(s2) + '] = stop\n')
-            else:
-                if 'stop' not in policy[s]:
-                    file.write('policy[' + str(s2) + '] = \'' + policy[s].pop() + '\'\n')
-                else:
-                    file.write('policy['+str(s2)+'] = stop\n')
-        file.close()
 
     def computeTrace(self,init,policy,T,targ = None):
         s = init
@@ -261,7 +244,7 @@ class MDP(NFA):
         t = 0
         trace[t] = s
         while t < T:
-            print 't = ', t, 'state = ', s
+            print('t = ', t, 'state = ', s)
             act = list(policy[s])[0]
             ns = self.sample(s,act)
             t += 1
@@ -271,3 +254,14 @@ class MDP(NFA):
                 return trace
 
 
+    def constructProductfromMC(self,MC_to_product):
+        states = [(s1, s2) for s1 in self.states for s2 in MC_to_product.states]
+        product_trans = []
+        for s1 in states:
+            for s2 in states:
+                for a in self.alphabet:
+                    p1 = self.prob_delta(s1[0],a,s2[0])
+                    p2 = MC_to_product[(s1[1], s2[1])]
+                    if p1 * p2 > 0:
+                        product_trans.append((s1, a, s2, p1 * p2))
+        return MDP(states, set(self.alphabet), product_trans)
