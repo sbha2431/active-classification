@@ -255,7 +255,7 @@ class MDP(NFA):
 
 
     def constructProductfromMC(self,MC_to_product):
-        states = [(s1, s2) for s1 in self.states for s2 in MC_to_product.states]
+        states = [(s1, s2) for s1 in self.states for s2 in list(MC_to_product.keys())]
         product_trans = []
         for s1 in states:
             for s2 in states:

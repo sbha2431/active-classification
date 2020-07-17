@@ -2,7 +2,7 @@ from gridworld import *
 from mdp import MDP
 import visibility
 
-# Instantiate gridworld
+## Instantiate gridworld
 nrows = 7
 ncols = 7
 initial = [42]
@@ -17,7 +17,7 @@ gwg.render()
 gwg.draw_state_labels()
 gwg.save('Examples/NN_verification_7x7.png')
 
-# Create MDP from gridworld
+## Create MDP from gridworld
 states = range(gwg.nstates)
 alphabet = [0,1,2,3] # North, south, west, east
 transitions = []
